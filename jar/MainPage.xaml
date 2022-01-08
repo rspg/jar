@@ -1,0 +1,132 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:jar"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:oxy="using:OxyPlot.Windows"
+    xmlns:ui="using:Microsoft.UI.Xaml.Controls" xmlns:Custom="using:Windows.Globalization.NumberFormatting" x:Name="page"
+    x:Class="jar.MainPage"
+    mc:Ignorable="d" Width="800" Height="400"
+    Loaded="page_Loaded">
+
+    <Page.Resources>
+        <DataTemplate x:Key="CommandDataTemplate" x:DataType="local:CommandDataDisplay">
+            <Grid Padding="4,4,4,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{x:Bind Index, Mode=OneWay}" MinWidth="30" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <ComboBox ItemsSource="{x:Bind local:CommandDataDisplay.CommandNameDictionary}" 
+                        DisplayMemberPath="Value"
+                        SelectedIndex="0"
+                        SelectedValue="{x:Bind Type, Mode=TwoWay}" 
+                        SelectedValuePath="Key"  
+                        MinWidth="200" Grid.Column="1"/>
+                <ui:NumberBox Visibility="{x:Bind Mode=OneWay, Path=VisibleTemperature}" 
+                              Value="{x:Bind Mode=TwoWay, Path=Temperature}" 
+                              Maximum="100" Grid.Row="1" Grid.Column="1" Minimum="0"/>
+                <ui:NumberBox Visibility="{x:Bind Mode=OneWay, Path=VisibleMinute}" 
+                              Value="{x:Bind Mode=TwoWay, Path=Minute}" 
+                              Maximum="600" Grid.Row="1" Grid.Column="1" Minimum="0"/>
+                <ui:NumberBox Visibility="{x:Bind Mode=OneWay, Path=VisibleKp}" 
+                              Value="{x:Bind Mode=TwoWay, Path=Kp}" 
+                              Maximum="10" Grid.Row="1" Grid.Column="1" Minimum="0"/>
+                <ui:NumberBox Visibility="{x:Bind Mode=OneWay, Path=VisibleTi}" 
+                              Value="{x:Bind Mode=TwoWay, Path=Ti}" 
+                              Maximum="99999" Grid.Row="1" Grid.Column="1" Minimum="0"/>
+                <ui:NumberBox Visibility="{x:Bind Mode=OneWay, Path=VisiblePhaseDelay}" 
+                              Value="{x:Bind Mode=TwoWay, Path=PhaseDelay}" 
+                              Maximum="10000" Grid.Row="1" Grid.Column="1" Minimum="0"/>
+                <ui:NumberBox Visibility="{x:Bind Mode=OneWay, Path=VisiblePower}" 
+                              Value="{x:Bind Mode=TwoWay, Path=Power}" 
+                              Maximum="100" Grid.Row="1" Grid.Column="1" Minimum="0"/>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Page.Background>
+        <ThemeResource ResourceKey="ApplicationPageBackgroundThemeBrush"/>
+    </Page.Background>
+
+    <Grid x:Name="TopGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <FlyoutBase.AttachedFlyout>
+            <Flyout x:Name="BLEDeviceListFlyout" Closed="BLEDeviceListFlyout_Closed">
+                <local:BLEDeviceList x:Name="BLEDeviceList"/>
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
+
+        <oxy:PlotView Grid.Column="0" Grid.Row="0" Model="{x:Bind Path=DeviceStatusModel}"/>
+        <StackPanel Grid.Column="0" Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="DEVICE："/>
+                    <TextBlock Text="{x:Bind Mode=OneWay, Path=ConnectedBLEDevice.Name}"/>
+                </StackPanel>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="STATUS："/>
+                    <TextBlock Text="{x:Bind Mode=OneWay, Path=StatusCommand}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="INDEX："/>
+                    <TextBlock Text="{x:Bind Mode=OneWay, Path=StatusCommandIndex}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <TextBlock Text="CMD_NUM："/>
+                    <TextBlock Text="{x:Bind Mode=OneWay, Path=StatusCommandNum}"/>
+                </StackPanel>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="POW："/>
+                    <TextBlock Text="{x:Bind Mode=OneWay, Path=StatusPowerRate}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="TEMP："/>
+                    <TextBlock Text="{x:Bind Mode=OneWay, Path=StatusTemperature}"/>
+                </StackPanel>
+            </Grid>
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="LEFT："/>
+                    <TextBlock Text="{x:Bind Mode=OneWay, Path=StatusLeftTime}"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+        <ScrollViewer Grid.Column="1" Grid.RowSpan="2" HorizontalScrollBarVisibility="Auto">
+            <ListView 
+                ItemTemplate="{StaticResource CommandDataTemplate}"
+                ItemsSource="{x:Bind Commands, Mode=TwoWay}">
+            </ListView>
+        </ScrollViewer>
+    </Grid>
+</Page>
